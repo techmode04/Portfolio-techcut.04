@@ -1,6 +1,7 @@
 /* ==========================================================================
    SACHIN DHISLE PORTFOLIO - MAIN JS & INLINE LIGHTBOX VIDEO MODAL
    Features: Instant Inline Lightbox Video Player & Dynamic Client Testimonials
+   Includes: Reliable Google Drive Photo Thumbnail Renderer for Client Reviews
    ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -132,6 +133,25 @@ function initStatsCounters() {
   statNumbers.forEach(el => observer.observe(el));
 }
 
+function extractDriveFileId(url) {
+  if (!url) return null;
+  const s = String(url).trim();
+  const match = s.match(/\/d\/([a-zA-Z0-9_-]+)/) || s.match(/id=([a-zA-Z0-9_-]+)/) || s.match(/^([a-zA-Z0-9_-]{25,50})$/);
+  return match ? match[1] : null;
+}
+
+function formatGoogleDriveImageUrl(url) {
+  if (!url || url.trim() === "") return "";
+  const fileId = extractDriveFileId(url);
+  if (fileId) {
+    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w500`;
+  }
+  if (url.startsWith("http") || url.startsWith("data:")) {
+    return url;
+  }
+  return "";
+}
+
 /**
  * Render Dynamic Client Testimonials & Reviews on Home Page (index.html)
  */
@@ -179,10 +199,12 @@ async function renderTestimonials() {
     return;
   }
 
-  // Render custom testimonials dynamically with Client Photo!
+  // Render custom testimonials dynamically with Crisp Google Drive Client Photo!
   container.innerHTML = testimonials.map(t => {
     const starCount = t.rating || 5;
     const starsHtml = '<i class="ri-star-fill"></i>'.repeat(starCount);
+    const photoUrl = formatGoogleDriveImageUrl(t.photoUrl);
+    const driveFileId = extractDriveFileId(t.photoUrl);
 
     return `
       <div class="glass-card" style="padding: 28px; display: flex; flex-direction: column;">
@@ -193,7 +215,15 @@ async function renderTestimonials() {
           "${escapeHTML(t.reviewText)}"
         </p>
         <div style="display: flex; align-items: center; gap: 14px;">
-          ${t.photoUrl ? `<img src="${escapeHTML(t.photoUrl)}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-primary);" alt="${escapeHTML(t.name)}" />` : `<div style="width:48px; height:48px; border-radius:50%; background:rgba(0,102,255,0.15); display:flex; align-items:center; justify-content:center; color:var(--accent-primary); font-size:1.2rem; font-weight:700;">${escapeHTML((t.name || 'C')[0])}</div>`}
+          ${photoUrl ? `
+            <img src="${escapeHTML(photoUrl)}" 
+                 onerror="if(this.dataset.retry!='1'){this.dataset.retry='1';this.src='https://lh3.googleusercontent.com/d/${driveFileId}';}else{this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='flex';}"
+                 style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-primary);" 
+                 alt="${escapeHTML(t.name)}" />
+            <div style="width:48px; height:48px; border-radius:50%; background:rgba(0,102,255,0.15); display:none; align-items:center; justify-content:center; color:var(--accent-primary); font-size:1.2rem; font-weight:700;">${escapeHTML((t.name || 'C')[0])}</div>
+          ` : `
+            <div style="width:48px; height:48px; border-radius:50%; background:rgba(0,102,255,0.15); display:flex; align-items:center; justify-content:center; color:var(--accent-primary); font-size:1.2rem; font-weight:700;">${escapeHTML((t.name || 'C')[0])}</div>
+          `}
           <div>
             <div style="font-weight: 700; color: var(--text-main); font-size: 1.02rem;">${escapeHTML(t.name)}</div>
             <div style="font-size: 0.82rem; color: var(--accent-primary);">${escapeHTML(t.roleCompany || 'Client')}</div>
@@ -302,13 +332,6 @@ function initInlineVideoModalMarkup() {
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeInlineVideoModal();
   });
-}
-
-function extractDriveFileId(url) {
-  if (!url) return null;
-  const s = String(url).trim();
-  const match = s.match(/\/d\/([a-zA-Z0-9_-]+)/) || s.match(/id=([a-zA-Z0-9_-]+)/) || s.match(/^([a-zA-Z0-9_-]{25,50})$/);
-  return match ? match[1] : null;
 }
 
 async function openInlineVideoModal(target) {

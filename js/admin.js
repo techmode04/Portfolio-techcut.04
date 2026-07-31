@@ -1,6 +1,7 @@
 /* ==========================================================================
    SACHIN DHISLE PORTFOLIO - SECURED ADMIN DASHBOARD JS
    Features: Automatic Video Frame Thumbnail Generator & Testimonials Management
+   Includes: Reliable Google Drive Photo Thumbnail Renderer for Client Reviews
    ========================================================================== */
 
 let adminToken = sessionStorage.getItem("sd_admin_token") || null;
@@ -39,6 +40,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   await API.syncFromSheet();
   checkAdminAuth();
 });
+
+function extractDriveFileId(url) {
+  if (!url) return null;
+  const s = String(url).trim();
+  const match = s.match(/\/d\/([a-zA-Z0-9_-]+)/) || s.match(/id=([a-zA-Z0-9_-]+)/) || s.match(/^([a-zA-Z0-9_-]{25,50})$/);
+  return match ? match[1] : null;
+}
+
+function formatGoogleDriveImageUrl(url) {
+  if (!url || url.trim() === "") return "";
+  const fileId = extractDriveFileId(url);
+  if (fileId) {
+    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w500`;
+  }
+  if (url.startsWith("http") || url.startsWith("data:")) {
+    return url;
+  }
+  return "";
+}
 
 /**
  * Extract a Crisp Frame from Video File to use as Cover Thumbnail
@@ -441,12 +461,20 @@ function renderAdminTestimonialsTable() {
 
   tbody.innerHTML = adminTestimonialsList.map(t => {
     const stars = "⭐".repeat(t.rating || 5);
-    const photoSrc = t.photoUrl ? escapeHTML(t.photoUrl) : "assets/images/logo.png";
+    const photoUrl = formatGoogleDriveImageUrl(t.photoUrl);
+    const driveFileId = extractDriveFileId(t.photoUrl);
 
     return `
       <tr>
         <td>
-          ${t.photoUrl ? `<img src="${photoSrc}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-primary);" alt="Client" />` : `<div style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; color:var(--text-muted);"><i class="ri-user-3-line"></i></div>`}
+          ${photoUrl ? `
+            <img src="${escapeHTML(photoUrl)}" 
+                 onerror="if(this.dataset.retry!='1'){this.dataset.retry='1';this.src='https://lh3.googleusercontent.com/d/${driveFileId}';}else{this.style.display='none';}"
+                 style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-primary);" 
+                 alt="Client" />
+          ` : `
+            <div style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; color:var(--text-muted);"><i class="ri-user-3-line"></i></div>
+          `}
         </td>
         <td><strong>${escapeHTML(t.name)}</strong></td>
         <td><span class="badge badge-accent">${escapeHTML(t.roleCompany)}</span></td>
