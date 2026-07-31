@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Project Details | sachindhisle Portfolio</title>
+  
+  <meta name="description" content="Watch video project showcase by sachindhisle with detailed post-production notes, color grading LUTs, sound design info, and client specifications.">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0066ff">
+
+  <!-- Fonts & CDN Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/portfolio.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div id="ambient-glow"></div>
+
+  <!-- Header -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo">
+        <div class="logo-badge">SD</div>
+        <span>sachindhisle</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="portfolio.html" class="active">Portfolio</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="admin.html" style="opacity: 0.6;"><i class="ri-user-settings-line"></i> Admin</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="portfolio.html" class="btn btn-secondary btn-sm"><i class="ri-arrow-left-line"></i> Back</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main style="padding-top: 100px;">
+    <div class="container">
+
+      <!-- Responsive Video Player Embed Container -->
+      <div class="player-container glass-card" id="player-container">
+        <!-- Dynamically injected iframe/video player -->
+      </div>
+
+      <!-- Video Metadata Details Grid -->
+      <div class="video-detail-grid">
+        
+        <!-- Left: Title, Description, Tags -->
+        <div class="video-main-meta">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <span class="badge badge-accent" id="video-category-badge">Category</span>
+            <span class="badge badge-ratio" id="video-ratio-badge">16:9</span>
+          </div>
+
+          <h1 id="video-title">Loading project title...</h1>
+
+          <div class="video-stats-bar">
+            <span><i class="ri-user-line"></i> Client: <strong id="video-client-name" style="color:var(--text-main)">Client</strong></span>
+            <span><i class="ri-calendar-line"></i> Released: <strong id="video-upload-date" style="color:var(--text-main)">2026</strong></span>
+            <span><i class="ri-eye-line"></i> Views: <strong id="video-views-count" style="color:var(--text-main)">0</strong></span>
+          </div>
+
+          <div style="margin-top: 24px;">
+            <h3 style="font-size: 1.15rem; margin-bottom: 10px;">About This Project</h3>
+            <p id="video-description-text" style="color: var(--text-muted); font-size: 1.05rem; line-height: 1.8;">
+              Loading project workflow and post-production breakdown...
+            </p>
+          </div>
+
+          <div style="margin-top: 30px;">
+            <h4 style="font-size: 0.95rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px;">Software & Post-Production Tags</h4>
+            <div class="software-tags-wrapper" id="video-software-tags">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Actions & Call to Action Card -->
+        <div>
+          <div class="glass-card" style="padding: 30px; margin-bottom: 24px;">
+            <h3 style="margin-bottom: 14px; font-size: 1.2rem;">Like This Editing Style?</h3>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 20px;">
+              Hire sachindhisle to produce similar high-retention video content for your brand, property, or channel.
+            </p>
+
+            <a href="contact.html" class="btn btn-primary" style="width: 100%; margin-bottom: 12px;">
+              Hire For Similar Edit <i class="ri-arrow-right-line"></i>
+            </a>
+
+            <button id="share-project-btn" class="btn btn-secondary" style="width: 100%;">
+              <i class="ri-share-forward-line"></i> Share Project Link
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Project Switcher Bar (Previous / Next) -->
+      <div class="project-nav-bar" id="project-nav-bar">
+        <!-- Dynamically populated -->
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand-logo">
+            <div class="logo-badge">SD</div>
+            <span>sachindhisle</span>
+          </a>
+          <p>Professional Video Editor & Motion Designer crafting high-impact visual stories for global brands and creators.</p>
+          <div class="social-links">
+            <a href="https://instagram.com/techcut.04" target="_blank" class="social-icon" aria-label="Instagram"><i class="ri-instagram-line"></i></a>
+            <a href="https://www.linkedin.com/in/sachin-dhisle-82031a27b/" target="_blank" class="social-icon" aria-label="LinkedIn"><i class="ri-linkedin-fill"></i></a>
+            <a href="https://youtube.com/@techmode04" target="_blank" class="social-icon" aria-label="YouTube"><i class="ri-youtube-line"></i></a>
+            <a href="https://wa.me/919369876866" target="_blank" class="social-icon" aria-label="WhatsApp"><i class="ri-whatsapp-line"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="about.html">About Me</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Categories</h4>
+          <ul>
+            <li><a href="portfolio.html">Real Estate</a></li>
+            <li><a href="portfolio.html">Reels & Shorts</a></li>
+            <li><a href="portfolio.html">Commercial</a></li>
+            <li><a href="portfolio.html">YouTube Edits</a></li>
+            <li><a href="portfolio.html">Color Grading</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Contact Info</h4>
+          <ul>
+            <li><i class="ri-mail-line"></i> hey.sachindhisle04@gmail.com</li>
+            <li><i class="ri-phone-line"></i> +91 9369876866</li>
+            <li><i class="ri-global-line"></i> sachindhisle.com</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 sachindhisle. All rights reserved.</div>
+        <div><a href="admin.html">Admin Dashboard</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/video-player.js"></script>
+</body>
+</html>

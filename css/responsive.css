@@ -1,0 +1,296 @@
+/* ==========================================================================
+   SACHIN DHISLE PORTFOLIO - RESPONSIVE & MOBILE OPTIMIZED STYLESHEET
+   Supports Desktop, Tablet, and Mobile Viewports across all pages
+   ========================================================================== */
+
+/* Global Smooth Touch Experience */
+@media (hover: hover) {
+  .btn:hover, .glass-card:hover, .social-icon:hover {
+    transition: transform var(--tr-fast), box-shadow var(--tr-fast);
+  }
+}
+
+/* Hide Decorative Curved Arrows & Floating Annotations on Mobile (PC Only) */
+@media (max-width: 768px) {
+  .curved-arrow-svg,
+  .floating-annotation-badge {
+    display: none !important;
+  }
+}
+
+/* Desktop & Laptop Specific Arrow Adjustments (769px and above) */
+@media (min-width: 769px) {
+  .curved-arrow-svg {
+    display: block;
+  }
+}
+
+/* Tablet & Smaller Desktop Screens (1024px and below) */
+@media (max-width: 1024px) {
+  .about-hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 30px !important;
+    text-align: center;
+  }
+  
+  .about-hero-grid .section-tag {
+    margin: 0 auto 12px auto;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr !important;
+    gap: 30px !important;
+  }
+
+  .contact-form-card {
+    padding: 24px !important;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+
+  .video-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Mobile Devices (Smartphones 768px and below) */
+@media (max-width: 768px) {
+  section {
+    padding: 40px 0;
+  }
+
+  /* Mobile Navbar & Hamburger Menu Drawer */
+  .mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-color);
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 85%;
+    max-width: 320px;
+    height: 100vh;
+    background: rgba(12, 13, 18, 0.97);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-left: 1px solid var(--border-color);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 90px 24px 30px 24px;
+    gap: 18px;
+    box-shadow: -10px 0 40px rgba(0,0,0,0.9);
+    transition: right var(--tr-normal);
+    z-index: 999;
+  }
+
+  .nav-links.active {
+    right: 0;
+  }
+
+  .nav-links a {
+    font-size: 1.05rem;
+    width: 100%;
+    padding: 10px 0;
+  }
+
+  /* Hero Section Mobile Polish */
+  .hero-section {
+    padding-top: 40px;
+  }
+
+  .hero-section h1 {
+    font-size: clamp(2rem, 5.5vw, 2.8rem) !important;
+    line-height: 1.25 !important;
+  }
+
+  .hero-section p {
+    font-size: 1.05rem !important;
+    margin-bottom: 28px !important;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    width: 100% !important;
+    max-width: 360px;
+    gap: 12px !important;
+    margin-bottom: 40px !important;
+  }
+
+  .hero-buttons .btn {
+    width: 100% !important;
+  }
+
+  .hero-showreel {
+    max-width: 100% !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+
+  .hero-showreel .play-btn-circle {
+    width: 60px !important;
+    height: 60px !important;
+    font-size: 1.5rem !important;
+  }
+
+  /* Portfolio Grid & Cards on Mobile */
+  .portfolio-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 24px 20px;
+  }
+
+  .stat-item {
+    padding: 12px 10px;
+  }
+
+  /* Admin Table Responsiveness */
+  .admin-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-table {
+    min-width: 680px;
+  }
+
+  .admin-header-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  /* Compact & Modern 2-Column Mobile Footer Layout */
+  .site-footer {
+    padding: 40px 0 30px 0;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 30px;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+    margin-bottom: 10px;
+  }
+
+  .footer-brand p {
+    max-width: 100%;
+    font-size: 0.88rem;
+    margin-top: 10px;
+  }
+
+  .footer-col h4 {
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+  }
+
+  .footer-col ul li {
+    margin-bottom: 8px;
+  }
+
+  .footer-col ul li a {
+    font-size: 0.85rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  .project-nav-bar {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+
+  /* Modal Mobile Ergonomics */
+  .modal-overlay {
+    padding: 12px;
+  }
+
+  .modal-content {
+    max-width: 100%;
+    max-height: 94vh;
+    border-radius: var(--radius-md);
+  }
+
+  .modal-header {
+    padding: 16px 20px;
+  }
+
+  .modal-body {
+    padding: 20px 16px;
+  }
+
+  .search-filter-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    max-width: 100%;
+  }
+
+  /* iOS Auto-Zoom Prevention */
+  input[type="text"], input[type="password"], input[type="email"], input[type="url"], select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Extra Small Mobile Devices (480px and below) */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  
+  .portfolio-grid {
+    grid-template-columns: 1fr;
+  }
+
+  h1 { font-size: 1.9rem !important; }
+  h2 { font-size: 1.5rem !important; }
+  h3 { font-size: 1.15rem !important; }
+
+  .btn-lg {
+    padding: 14px 22px;
+    font-size: 0.95rem;
+  }
+
+  .category-pills {
+    gap: 8px;
+  }
+
+  .filter-btn {
+    padding: 8px 14px;
+    font-size: 0.82rem;
+  }
+}

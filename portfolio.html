@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio | sachindhisle Video Editing Showcase</title>
+  
+  <meta name="description" content="Explore video editing portfolio projects by sachindhisle including real estate tours, commercials, YouTube episodes, reels, shorts, motion graphics, and color grading.">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0066ff">
+
+  <!-- Fonts & CDN Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/portfolio.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div id="ambient-glow"></div>
+
+  <!-- Header -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo">
+        <div class="logo-badge">SD</div>
+        <span>sachindhisle</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="portfolio.html" class="active">Portfolio</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="admin.html" style="opacity: 0.6;"><i class="ri-user-settings-line"></i> Admin</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="contact.html" class="btn btn-primary btn-sm">Hire Me</a>
+        <button class="mobile-toggle" aria-label="Toggle Navigation">
+          <i class="ri-menu-line"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <section style="padding: 50px 0;">
+      <div class="container">
+        
+        <!-- Header -->
+        <div class="section-header text-center" style="max-width: 650px; margin: 0 auto 40px auto;">
+          <span class="section-tag"><i class="ri-folder-video-line"></i> Portfolio Showcase</span>
+          <h1 class="gradient-text">Selected Projects</h1>
+          <p style="color: var(--text-muted); font-size: 1.05rem;">
+            Filter by category or search through projects to see examples of motion graphics, color grading, real estate, and social edits.
+          </p>
+        </div>
+
+        <!-- Controls: Live Search & Category Filter Pills -->
+        <div class="portfolio-controls">
+          <div class="search-filter-wrapper">
+            
+            <div class="search-box">
+              <i class="ri-search-line search-icon"></i>
+              <input type="text" id="portfolio-search" placeholder="Search by title, client, software, or tag..." />
+            </div>
+
+            <div class="category-pills" id="category-pills">
+              <!-- Dynamically populated by js/portfolio.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Portfolio Video Cards Grid -->
+        <div class="portfolio-grid" id="portfolio-grid">
+          <!-- Dynamically populated by JS -->
+        </div>
+
+        <!-- Load More Container -->
+        <div id="load-more-container" style="display: none; justify-content: center; margin-top: 50px;">
+          <button id="load-more-btn" class="btn btn-secondary btn-lg">
+            Load More Projects <i class="ri-arrow-down-line"></i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand-logo">
+            <div class="logo-badge">SD</div>
+            <span>sachindhisle</span>
+          </a>
+          <p>Professional Video Editor & Motion Designer crafting high-impact visual stories for global brands and creators.</p>
+          <div class="social-links">
+            <a href="https://instagram.com/techcut.04" target="_blank" class="social-icon" aria-label="Instagram"><i class="ri-instagram-line"></i></a>
+            <a href="https://www.linkedin.com/in/sachin-dhisle-82031a27b/" target="_blank" class="social-icon" aria-label="LinkedIn"><i class="ri-linkedin-fill"></i></a>
+            <a href="https://youtube.com/@techmode04" target="_blank" class="social-icon" aria-label="YouTube"><i class="ri-youtube-line"></i></a>
+            <a href="https://wa.me/919369876866" target="_blank" class="social-icon" aria-label="WhatsApp"><i class="ri-whatsapp-line"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="about.html">About Me</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Categories</h4>
+          <ul>
+            <li><a href="portfolio.html">Real Estate</a></li>
+            <li><a href="portfolio.html">Reels & Shorts</a></li>
+            <li><a href="portfolio.html">Commercial</a></li>
+            <li><a href="portfolio.html">YouTube Edits</a></li>
+            <li><a href="portfolio.html">Color Grading</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Contact Info</h4>
+          <ul>
+            <li><i class="ri-mail-line"></i> hey.sachindhisle04@gmail.com</li>
+            <li><i class="ri-phone-line"></i> +91 9369876866</li>
+            <li><i class="ri-global-line"></i> sachindhisle.com</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 sachindhisle. All rights reserved.</div>
+        <div><a href="admin.html">Admin Dashboard</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/portfolio.js"></script>
+</body>
+</html>
