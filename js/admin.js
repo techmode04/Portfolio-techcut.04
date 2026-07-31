@@ -1,16 +1,19 @@
 /* ==========================================================================
    SACHIN DHISLE PORTFOLIO - SECURED ADMIN DASHBOARD JS
-   Features: Automatic Video Frame Thumbnail Generator & Real-Time Sheet Sync
+   Features: Automatic Video Frame Thumbnail Generator & Testimonials Management
    ========================================================================== */
 
 let adminToken = sessionStorage.getItem("sd_admin_token") || null;
 let adminVideosList = [];
+let adminTestimonialsList = [];
 let editingVideoId = null;
+let editingTestimonialId = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
   const loginForm = document.getElementById("admin-login-form");
   const uploadForm = document.getElementById("video-form");
   const passwordForm = document.getElementById("change-password-form");
+  const testimonialForm = document.getElementById("testimonial-form");
 
   if (loginForm) {
     loginForm.addEventListener("submit", handleAdminLogin);
@@ -24,6 +27,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     passwordForm.addEventListener("submit", handleChangeCredentialsSubmit);
   }
 
+  if (testimonialForm) {
+    testimonialForm.addEventListener("submit", handleTestimonialSave);
+  }
+
   const logoutBtn = document.getElementById("admin-logout-btn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", handleLogout);
@@ -34,7 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /**
- * Automatically Extract a Crisp Frame from Video File to use as Cover Thumbnail
+ * Extract a Crisp Frame from Video File to use as Cover Thumbnail
  */
 function extractFrameFromVideoFile(file) {
   return new Promise((resolve) => {
@@ -155,9 +162,6 @@ async function saveAppsScriptUrl() {
   loadDashboardData();
 }
 
-/**
- * Tab Source Switching Helpers
- */
 function switchVideoSource(type) {
   const tabFile = document.getElementById("tab-v-file");
   const tabUrl = document.getElementById("tab-v-url");
@@ -265,9 +269,6 @@ function handleLogout() {
   checkAdminAuth();
 }
 
-/**
- * Account Credentials Settings
- */
 function openCredentialsModal() {
   const modal = document.getElementById("password-modal");
   const form = document.getElementById("change-password-form");
@@ -334,12 +335,19 @@ async function loadDashboardData() {
   try {
     await API.syncFromSheet();
 
-    const res = await API.getVideos(true);
-    if (res.success && res.videos) {
-      adminVideosList = res.videos;
-      renderAdminStats();
-      renderAdminTable();
+    const vRes = await API.getVideos(true);
+    if (vRes.success && vRes.videos) {
+      adminVideosList = vRes.videos;
     }
+
+    const tRes = await API.getTestimonials();
+    if (tRes.success && tRes.testimonials) {
+      adminTestimonialsList = tRes.testimonials;
+    }
+
+    renderAdminStats();
+    renderAdminTable();
+    renderAdminTestimonialsTable();
     loadAdminMessages();
   } catch (e) {
     console.error("Error loading dashboard data:", e);
@@ -349,17 +357,17 @@ async function loadDashboardData() {
 function renderAdminStats() {
   const totalVidEl = document.getElementById("stat-total-videos");
   const totalViewsEl = document.getElementById("stat-total-views");
-  const totalCatsEl = document.getElementById("stat-total-categories");
+  const totalTestiEl = document.getElementById("stat-total-testimonials");
   const latestUploadEl = document.getElementById("stat-latest-upload");
 
   const totalVideos = adminVideosList.length;
   const totalViews = adminVideosList.reduce((acc, v) => acc + (parseInt(v.views) || 0), 0);
-  const categories = new Set(adminVideosList.map(v => v.category)).size;
+  const totalTestimonials = adminTestimonialsList.length;
   const latestDate = adminVideosList.length > 0 ? adminVideosList[0].uploadDate : "N/A";
 
   if (totalVidEl) totalVidEl.textContent = totalVideos;
   if (totalViewsEl) totalViewsEl.textContent = totalViews.toLocaleString();
-  if (totalCatsEl) totalCatsEl.textContent = categories;
+  if (totalTestiEl) totalTestiEl.textContent = totalTestimonials;
   if (latestUploadEl) latestUploadEl.textContent = latestDate || "N/A";
 }
 
@@ -408,6 +416,55 @@ function renderAdminTable() {
       </td>
     </tr>
   `).join("");
+}
+
+/**
+ * Render Testimonials & Client Reviews Table in Admin Dashboard
+ */
+function renderAdminTestimonialsTable() {
+  const tbody = document.getElementById("admin-testimonials-tbody");
+  if (!tbody) return;
+
+  if (adminTestimonialsList.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center" style="padding: 30px 20px;">
+          <p style="color: var(--text-muted); margin-bottom: 12px;">No custom client reviews added yet. Default client reviews are currently showing on your site.</p>
+          <button onclick="openAddTestimonialModal()" class="btn btn-primary btn-sm" style="background: #f59e0b; border: none;">
+            <i class="ri-add-line"></i> + Add Client Review
+          </button>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = adminTestimonialsList.map(t => {
+    const stars = "⭐".repeat(t.rating || 5);
+    const photoSrc = t.photoUrl ? escapeHTML(t.photoUrl) : "assets/images/logo.png";
+
+    return `
+      <tr>
+        <td>
+          ${t.photoUrl ? `<img src="${photoSrc}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-primary);" alt="Client" />` : `<div style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; color:var(--text-muted);"><i class="ri-user-3-line"></i></div>`}
+        </td>
+        <td><strong>${escapeHTML(t.name)}</strong></td>
+        <td><span class="badge badge-accent">${escapeHTML(t.roleCompany)}</span></td>
+        <td>${stars}</td>
+        <td style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-muted);">"${escapeHTML(t.reviewText)}"</td>
+        <td>
+          <div class="action-btns">
+            <button class="action-icon-btn edit" onclick="openEditTestimonialModal('${t.id}')" title="Edit Review">
+              <i class="ri-pencil-line"></i>
+            </button>
+            <button class="action-icon-btn delete" onclick="deleteTestimonialConfirm('${t.id}')" title="Delete Review">
+              <i class="ri-delete-bin-line"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join("");
 }
 
 function openAddModal() {
@@ -459,6 +516,114 @@ function closeModal() {
   if (modal) modal.classList.remove("active");
 }
 
+/**
+ * Testimonial Modal Open / Close Handlers
+ */
+function openAddTestimonialModal() {
+  editingTestimonialId = null;
+  const modal = document.getElementById("testimonial-modal");
+  const form = document.getElementById("testimonial-form");
+  const title = document.getElementById("t-modal-title");
+
+  if (form) form.reset();
+  if (title) title.textContent = "+ Add Client Review";
+  if (modal) modal.classList.add("active");
+}
+
+function openEditTestimonialModal(id) {
+  const t = adminTestimonialsList.find(item => item.id === id);
+  if (!t) return;
+
+  editingTestimonialId = id;
+  const modal = document.getElementById("testimonial-modal");
+  const title = document.getElementById("t-modal-title");
+
+  if (title) title.textContent = "Edit Client Review";
+  document.getElementById("t-form-name").value = t.name || "";
+  document.getElementById("t-form-role").value = t.roleCompany || "";
+  document.getElementById("t-form-rating").value = t.rating || "5";
+  document.getElementById("t-form-photo-url").value = t.photoUrl || "";
+  document.getElementById("t-form-review").value = t.reviewText || "";
+
+  if (modal) modal.classList.add("active");
+}
+
+function closeTestimonialModal() {
+  const modal = document.getElementById("testimonial-modal");
+  if (modal) modal.classList.remove("active");
+}
+
+async function handleTestimonialSave(e) {
+  e.preventDefault();
+
+  const name = document.getElementById("t-form-name").value.trim();
+  const roleCompany = document.getElementById("t-form-role").value.trim();
+  const rating = parseInt(document.getElementById("t-form-rating").value) || 5;
+  let photoUrl = document.getElementById("t-form-photo-url").value.trim();
+  const reviewText = document.getElementById("t-form-review").value.trim();
+  const photoFileInput = document.getElementById("t-form-photo-file");
+
+  if (!name || !reviewText) {
+    showToast("Client name and review feedback are required.", "error");
+    return;
+  }
+
+  const saveBtn = document.getElementById("save-testimonial-btn");
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Saving review...`;
+
+  try {
+    if (photoFileInput && photoFileInput.files.length > 0) {
+      const file = photoFileInput.files[0];
+      const uploadedPhotoUrl = await API.uploadFileWithProgress(file, false, "Client_Photos");
+      if (uploadedPhotoUrl) photoUrl = uploadedPhotoUrl;
+    }
+
+    const payload = {
+      name,
+      roleCompany,
+      rating,
+      photoUrl,
+      reviewText
+    };
+
+    let res;
+    if (editingTestimonialId) {
+      res = await API.updateTestimonial(editingTestimonialId, payload);
+    } else {
+      res = await API.uploadTestimonial(payload);
+    }
+
+    if (res.success) {
+      showToast(res.message || "Testimonial saved successfully!", "success");
+      closeTestimonialModal();
+      loadDashboardData();
+    } else {
+      showToast(res.message || "Failed to save testimonial.", "error");
+    }
+  } catch (err) {
+    console.error("Testimonial save error:", err);
+    showToast("Error saving testimonial: " + err.message, "error");
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = `Save Review <i class="ri-check-line"></i>`;
+  }
+}
+
+async function deleteTestimonialConfirm(id) {
+  if (!confirm("Are you sure you want to delete this client review?")) return;
+
+  try {
+    const res = await API.deleteTestimonial(id);
+    if (res.success) {
+      showToast("Testimonial deleted successfully", "success");
+      loadDashboardData();
+    }
+  } catch (e) {
+    showToast("Error deleting testimonial", "error");
+  }
+}
+
 async function handleVideoSave(e) {
   e.preventDefault();
 
@@ -506,16 +671,13 @@ async function handleVideoSave(e) {
 
   try {
     let videoFileObj = null;
-    let thumbFileObj = null;
 
-    // 1. Upload Video File via Chunked Upload
     if (hasVideoFile) {
       videoFileObj = videoFileInput.files[0];
       const uploadedDriveUrl = await API.uploadFileWithProgress(videoFileObj, true, category, updateProgress);
       if (uploadedDriveUrl) driveVideoUrl = uploadedDriveUrl;
     }
 
-    // 2. If NO custom thumbnail image was selected by user, automatically extract a real frame from the video!
     if (!hasThumbFile && !thumbnailUrl && hasVideoFile && videoFileObj) {
       updateProgress(85, "Extracting real video frame for cover thumbnail...");
       const extractedFrameData = await extractFrameFromVideoFile(videoFileObj);

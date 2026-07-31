@@ -5,13 +5,14 @@
  * 1. Category-Wise Dedicated Drive Folders (Videos/Category & Thumbnails/Category)
  * 2. Chunked Large Video File Uploads
  * 3. Automatic Google Drive File Deletion when project is deleted in Admin
- * 4. Zero Unsplash Fallbacks - Clean Database & Real Video Frame Covers
+ * 4. Client Testimonials & Reviews Management with Client Photo Uploads
  * ==========================================================================
  */
 
 const SHEET_VIDEOS = "Videos";
 const SHEET_MESSAGES = "Messages";
 const SHEET_ADMIN = "Admin";
+const SHEET_TESTIMONIALS = "Testimonials";
 const DRIVE_ROOT_FOLDER_NAME = "Sachin_Portfolio_Uploads";
 const DEFAULT_PASS_HASH = "857c43043be3dad3225f51e5f2ae0d99e8e663569c13e36f18c1b0898592e06d";
 
@@ -59,7 +60,9 @@ function getRootDriveFolder() {
  */
 function getCategoryDriveFolder(type, category) {
   const root = getRootDriveFolder();
-  const parentName = (type === "video") ? "Videos" : "Thumbnails";
+  let parentName = "Thumbnails";
+  if (type === "video") parentName = "Videos";
+  if (type === "testimonial") parentName = "Client_Photos";
 
   let parentFolder;
   const parentSearch = root.getFoldersByName(parentName);
@@ -116,7 +119,7 @@ function uploadSingleFileToDrive(fileObj, isVideo = false, category = "General")
 }
 
 /**
- * CHUNKED UPLOAD SYSTEM
+ * CHUNKED UPLOADS
  */
 function initChunkUpload(data) {
   try {
@@ -185,20 +188,14 @@ function finalizeChunkUpload(data) {
   }
 }
 
-/**
- * Handle HTTP GET Requests
- */
 function doGet(e) {
   return ContentService.createTextOutput(JSON.stringify({
     success: true,
     status: "online",
-    message: "sachindhisle Portfolio Secured Backend API v5 is active!"
+    message: "sachindhisle Portfolio Secured Backend API v6 with Testimonials Support is active!"
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
-/**
- * Handle HTTP POST Requests
- */
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
@@ -236,6 +233,18 @@ function doPost(e) {
         break;
       case "deleteVideo":
         responseData = deleteVideo(data.id);
+        break;
+      case "getTestimonials":
+        responseData = getTestimonials();
+        break;
+      case "uploadTestimonial":
+        responseData = uploadTestimonial(data);
+        break;
+      case "updateTestimonial":
+        responseData = updateTestimonial(data);
+        break;
+      case "deleteTestimonial":
+        responseData = deleteTestimonial(data.id);
         break;
       case "submitContact":
         responseData = submitContact(data);
@@ -284,6 +293,8 @@ function getOrCreateSheet(sheetName) {
     } else if (sheetName === SHEET_ADMIN) {
       sheet.appendRow(["Username", "PasswordHash"]);
       sheet.appendRow(["admin", DEFAULT_PASS_HASH]);
+    } else if (sheetName === SHEET_TESTIMONIALS) {
+      sheet.appendRow(["ID", "Name", "RoleCompany", "ReviewText", "Rating", "PhotoUrl", "Date"]);
     }
   }
 
@@ -297,19 +308,18 @@ function syncAllData() {
   const vRes = getVideos(true);
   const mRes = getMessages();
   const aRes = getAdminCredentials();
+  const tRes = getTestimonials();
 
   return {
     success: true,
     videos: vRes.videos || [],
     messages: mRes.messages || [],
+    testimonials: tRes.testimonials || [],
     admin: aRes,
     timestamp: Date.now()
   };
 }
 
-/**
- * Read Admin Credentials
- */
 function getAdminCredentials() {
   const sheet = getOrCreateSheet(SHEET_ADMIN);
   const rows = sheet.getDataRange().getDisplayValues();
@@ -351,9 +361,6 @@ function getVideos(includeHidden) {
   return { success: true, videos: videos };
 }
 
-/**
- * Get Single Video Detail
- */
 function getVideo(id) {
   const sheet = getOrCreateSheet(SHEET_VIDEOS);
   const rows = sheet.getDataRange().getDisplayValues();
@@ -388,9 +395,6 @@ function getVideo(id) {
   return { success: false, message: "Video not found" };
 }
 
-/**
- * Save Video Project Metadata
- */
 function uploadVideo(data) {
   const sheet = getOrCreateSheet(SHEET_VIDEOS);
   const id = "vid_" + new Date().getTime();
@@ -432,9 +436,6 @@ function uploadVideo(data) {
   return { success: true, message: "Video project saved to database!", id: id, driveVideoUrl: videoUrl, thumbnailUrl: thumbUrl };
 }
 
-/**
- * Update Existing Video Record
- */
 function updateVideo(data) {
   const sheet = getOrCreateSheet(SHEET_VIDEOS);
   const rows = sheet.getDataRange().getDisplayValues();
@@ -474,9 +475,6 @@ function updateVideo(data) {
   return { success: false, message: "Video ID not found" };
 }
 
-/**
- * Delete Video Record AND Permanently Delete Files from Google Drive
- */
 function deleteVideo(id) {
   const sheet = getOrCreateSheet(SHEET_VIDEOS);
   const rows = sheet.getDataRange().getDisplayValues();
@@ -488,20 +486,12 @@ function deleteVideo(id) {
 
       const thumbFileId = extractDriveFileId(thumbUrl);
       if (thumbFileId) {
-        try {
-          DriveApp.getFileById(thumbFileId).setTrashed(true);
-        } catch (err) {
-          Logger.log("Failed to trash thumb file " + thumbFileId + ": " + err.toString());
-        }
+        try { DriveApp.getFileById(thumbFileId).setTrashed(true); } catch (err) {}
       }
 
       const videoFileId = extractDriveFileId(videoUrl);
       if (videoFileId) {
-        try {
-          DriveApp.getFileById(videoFileId).setTrashed(true);
-        } catch (err) {
-          Logger.log("Failed to trash video file " + videoFileId + ": " + err.toString());
-        }
+        try { DriveApp.getFileById(videoFileId).setTrashed(true); } catch (err) {}
       }
 
       sheet.deleteRow(i + 1);
@@ -516,8 +506,97 @@ function deleteVideo(id) {
 }
 
 /**
- * Submit Contact Form Message
+ * ==========================================================================
+ * TESTIMONIALS MANAGEMENT SYSTEM
+ * ==========================================================================
  */
+function getTestimonials() {
+  const sheet = getOrCreateSheet(SHEET_TESTIMONIALS);
+  const rows = sheet.getDataRange().getDisplayValues();
+  rows.shift();
+
+  const testimonials = rows.map(r => ({
+    id: String(r[0]),
+    name: String(r[1]),
+    roleCompany: String(r[2]),
+    reviewText: String(r[3]),
+    rating: parseInt(r[4]) || 5,
+    photoUrl: String(r[5]),
+    date: String(r[6])
+  }));
+
+  return { success: true, testimonials: testimonials };
+}
+
+function uploadTestimonial(data) {
+  const sheet = getOrCreateSheet(SHEET_TESTIMONIALS);
+  const id = "testi_" + new Date().getTime();
+  const dateStr = new Date().toISOString().split("T")[0];
+
+  let photoUrl = data.photoUrl || "";
+  if (data.photoFile && data.photoFile.base64) {
+    const uploaded = uploadSingleFileToDrive(data.photoFile, false, "Client_Photos");
+    if (uploaded) photoUrl = uploaded;
+  }
+
+  sheet.appendRow([
+    id,
+    data.name || "Client Name",
+    data.roleCompany || "Client / Brand",
+    data.reviewText || "Great video editing work!",
+    parseInt(data.rating) || 5,
+    photoUrl,
+    dateStr
+  ]);
+
+  return { success: true, message: "Client testimonial added to Google Sheets!", id: id, photoUrl: photoUrl };
+}
+
+function updateTestimonial(data) {
+  const sheet = getOrCreateSheet(SHEET_TESTIMONIALS);
+  const rows = sheet.getDataRange().getDisplayValues();
+
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][0]) === String(data.id)) {
+      const rowIdx = i + 1;
+
+      let photoUrl = data.photoUrl;
+      if (data.photoFile && data.photoFile.base64) {
+        const uploaded = uploadSingleFileToDrive(data.photoFile, false, "Client_Photos");
+        if (uploaded) photoUrl = uploaded;
+      }
+
+      if (data.name !== undefined) sheet.getRange(rowIdx, 2).setValue(data.name);
+      if (data.roleCompany !== undefined) sheet.getRange(rowIdx, 3).setValue(data.roleCompany);
+      if (data.reviewText !== undefined) sheet.getRange(rowIdx, 4).setValue(data.reviewText);
+      if (data.rating !== undefined) sheet.getRange(rowIdx, 5).setValue(parseInt(data.rating) || 5);
+      if (photoUrl !== undefined) sheet.getRange(rowIdx, 6).setValue(photoUrl);
+
+      return { success: true, message: "Client testimonial updated in Google Sheets!" };
+    }
+  }
+  return { success: false, message: "Testimonial ID not found" };
+}
+
+function deleteTestimonial(id) {
+  const sheet = getOrCreateSheet(SHEET_TESTIMONIALS);
+  const rows = sheet.getDataRange().getDisplayValues();
+
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][0]) === String(id)) {
+      const photoUrl = String(rows[i][5] || "");
+      const photoFileId = extractDriveFileId(photoUrl);
+      if (photoFileId) {
+        try { DriveApp.getFileById(photoFileId).setTrashed(true); } catch (err) {}
+      }
+
+      sheet.deleteRow(i + 1);
+      return { success: true, message: "Client testimonial deleted successfully!" };
+    }
+  }
+  return { success: false, message: "Testimonial ID not found" };
+}
+
 function submitContact(data) {
   const sheet = getOrCreateSheet(SHEET_MESSAGES);
   const id = "msg_" + new Date().getTime();
@@ -534,9 +613,6 @@ function submitContact(data) {
   return { success: true, message: "Thank you! Your message has been sent successfully." };
 }
 
-/**
- * Secure Admin Authentication
- */
 function login(username, passwordHash, rawPassword) {
   const sheet = getOrCreateSheet(SHEET_ADMIN);
   const rows = sheet.getDataRange().getDisplayValues();
@@ -560,9 +636,6 @@ function login(username, passwordHash, rawPassword) {
   return { success: false, message: "Invalid username or password credentials!" };
 }
 
-/**
- * Update Admin Credentials
- */
 function updateCredentials(data) {
   const sheet = getOrCreateSheet(SHEET_ADMIN);
   const rows = sheet.getDataRange().getDisplayValues();
@@ -583,12 +656,9 @@ function updateCredentials(data) {
     return { success: true, message: "Credentials saved to Google Sheets!", username: newUsername };
   }
 
-  return { success: false, message: "Current password verification failed! Please check your current password." };
+  return { success: false, message: "Current password verification failed!" };
 }
 
-/**
- * Fetch Contact Messages
- */
 function getMessages(token) {
   const sheet = getOrCreateSheet(SHEET_MESSAGES);
   const rows = sheet.getDataRange().getDisplayValues();

@@ -1,16 +1,11 @@
 /* ==========================================================================
    SACHIN DHISLE PORTFOLIO - ULTRA-ROBUST API CLIENT WITH CHUNKED UPLOADS
-   Bulletproof Google Apps Script & Sheets Integration with Progress Callbacks
-   Zero Unsplash URLs across the entire codebase!
+   Bulletproof Google Apps Script & Sheets Integration with Testimonials Support
    ========================================================================== */
 
 const API = {
-  // SHA-256 Digest of default password "sachin123"
   DEFAULT_PASS_HASH: "857c43043be3dad3225f51e5f2ae0d99e8e663569c13e36f18c1b0898592e06d",
 
-  /**
-   * Cryptographic SHA-256 Hash helper
-   */
   async hashString(str) {
     if (!str) return "";
     const encoder = new TextEncoder();
@@ -20,9 +15,6 @@ const API = {
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   },
 
-  /**
-   * Helper: Convert File to Base64 String
-   */
   fileToBase64(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -39,9 +31,6 @@ const API = {
     });
   },
 
-  /**
-   * Master Chunked File Upload with Real-Time Percentage Progress Callback
-   */
   async uploadFileWithProgress(file, isVideo, category, onProgress) {
     const scriptUrl = localStorage.getItem("sd_apps_script_url") || CONFIG.APPS_SCRIPT_URL;
     const base64Data = await this.fileToBase64(file);
@@ -106,9 +95,6 @@ const API = {
     return finalRes.finalUrl;
   },
 
-  /**
-   * Upload In-Memory Base64 Object (e.g. extracted video frame thumbnail)
-   */
   async uploadBase64WithProgress(fileObj, isVideo, category) {
     const scriptUrl = localStorage.getItem("sd_apps_script_url") || CONFIG.APPS_SCRIPT_URL;
 
@@ -162,9 +148,6 @@ const API = {
     return finalRes.finalUrl;
   },
 
-  /**
-   * Master Reload Sync
-   */
   async syncFromSheet() {
     let scriptUrl = localStorage.getItem("sd_apps_script_url") || CONFIG.APPS_SCRIPT_URL;
     if (!scriptUrl || scriptUrl.trim() === "") return null;
@@ -182,6 +165,9 @@ const API = {
         if (res.messages) {
           localStorage.setItem("sd_portfolio_messages", JSON.stringify(res.messages));
         }
+        if (res.testimonials) {
+          localStorage.setItem("sd_portfolio_testimonials", JSON.stringify(res.testimonials));
+        }
         return res;
       }
     } catch (e) {
@@ -190,9 +176,6 @@ const API = {
     return null;
   },
 
-  /**
-   * Ultra-Robust Fetcher with Automatic Retry & Failover
-   */
   async request(action, payload = {}, retries = 2) {
     let scriptUrl = localStorage.getItem("sd_apps_script_url") || CONFIG.APPS_SCRIPT_URL;
 
@@ -237,9 +220,6 @@ const API = {
     return this.localFallback(action, payload);
   },
 
-  /**
-   * Test live ping connection to Google Apps Script
-   */
   async testConnection(customUrl = null) {
     const targetUrl = customUrl || localStorage.getItem("sd_apps_script_url") || CONFIG.APPS_SCRIPT_URL;
     if (!targetUrl || targetUrl.trim() === "") {
@@ -259,14 +239,12 @@ const API = {
     }
   },
 
-  /**
-   * LocalStorage fallback simulator
-   */
   async localFallback(action, payload) {
     await new Promise(r => setTimeout(r, 100));
 
     let videos = JSON.parse(localStorage.getItem("sd_portfolio_videos") || "[]");
     let messages = JSON.parse(localStorage.getItem("sd_portfolio_messages") || "[]");
+    let testimonials = JSON.parse(localStorage.getItem("sd_portfolio_testimonials") || "[]");
     let storedAdminUser = localStorage.getItem("sd_admin_username") || "admin";
     let storedAdminHash = localStorage.getItem("sd_admin_password_hash") || this.DEFAULT_PASS_HASH;
 
@@ -323,6 +301,37 @@ const API = {
         videos = videos.filter(v => v.id !== payload.id);
         localStorage.setItem("sd_portfolio_videos", JSON.stringify(videos));
         return { success: true, message: "Video deleted successfully" };
+
+      case "getTestimonials":
+        return { success: true, testimonials: testimonials };
+
+      case "uploadTestimonial":
+        const newTesti = {
+          id: "testi_" + Date.now(),
+          name: payload.name,
+          roleCompany: payload.roleCompany || "Client",
+          reviewText: payload.reviewText,
+          rating: parseInt(payload.rating) || 5,
+          photoUrl: payload.photoUrl || "",
+          date: new Date().toISOString().split("T")[0]
+        };
+        testimonials.unshift(newTesti);
+        localStorage.setItem("sd_portfolio_testimonials", JSON.stringify(testimonials));
+        return { success: true, testimonial: newTesti, message: "Client testimonial added successfully!" };
+
+      case "updateTestimonial":
+        const tIndex = testimonials.findIndex(t => t.id === payload.id);
+        if (tIndex !== -1) {
+          testimonials[tIndex] = { ...testimonials[tIndex], ...payload };
+          localStorage.setItem("sd_portfolio_testimonials", JSON.stringify(testimonials));
+          return { success: true, message: "Testimonial updated!" };
+        }
+        return { success: false, message: "Testimonial not found" };
+
+      case "deleteTestimonial":
+        testimonials = testimonials.filter(t => t.id !== payload.id);
+        localStorage.setItem("sd_portfolio_testimonials", JSON.stringify(testimonials));
+        return { success: true, message: "Testimonial deleted successfully" };
 
       case "submitContact":
         const newMsg = {
@@ -394,6 +403,25 @@ const API = {
   deleteVideo(id) {
     const token = sessionStorage.getItem("sd_admin_token");
     return this.request("deleteVideo", { id, token });
+  },
+
+  getTestimonials() {
+    return this.request("getTestimonials", {});
+  },
+
+  uploadTestimonial(data) {
+    const token = sessionStorage.getItem("sd_admin_token");
+    return this.request("uploadTestimonial", { ...data, token });
+  },
+
+  updateTestimonial(id, data) {
+    const token = sessionStorage.getItem("sd_admin_token");
+    return this.request("updateTestimonial", { id, ...data, token });
+  },
+
+  deleteTestimonial(id) {
+    const token = sessionStorage.getItem("sd_admin_token");
+    return this.request("deleteTestimonial", { id, token });
   },
 
   submitContact(formData) {

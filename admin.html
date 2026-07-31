@@ -43,7 +43,7 @@
           <div class="text-center" style="margin-bottom: 24px;">
             <div class="logo-badge" style="width: 50px; height: 50px; margin: 0 auto 14px auto; font-size: 1.4rem;">SD</div>
             <h2>Admin Login</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Enter your secure credentials to manage video projects.</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Enter your secure credentials to manage video projects and client reviews.</p>
           </div>
 
           <form id="admin-login-form">
@@ -70,7 +70,7 @@
         <div class="admin-header-bar">
           <div>
             <h1>Dashboard Control Panel</h1>
-            <p style="color: var(--text-muted);">Manage your video portfolio, view stats, and check contact inquiries.</p>
+            <p style="color: var(--text-muted);">Manage your video portfolio, add client reviews, view stats, and check contact inquiries.</p>
           </div>
 
           <div style="display: flex; gap: 12px; flex-wrap: wrap;">
@@ -125,9 +125,9 @@
           </div>
 
           <div class="glass-card" style="padding: 24px;">
-            <div style="color: var(--warning); font-size: 1.5rem; margin-bottom: 8px;"><i class="ri-folder-open-line"></i></div>
-            <div style="font-size: 2rem; font-weight: 800;" id="stat-total-categories">0</div>
-            <div style="color: var(--text-muted); font-size: 0.85rem;">Categories</div>
+            <div style="color: var(--warning); font-size: 1.5rem; margin-bottom: 8px;"><i class="ri-star-line"></i></div>
+            <div style="font-size: 2rem; font-weight: 800;" id="stat-total-testimonials">0</div>
+            <div style="color: var(--text-muted); font-size: 0.85rem;">Client Reviews</div>
           </div>
 
           <div class="glass-card" style="padding: 24px;">
@@ -165,39 +165,74 @@
                 </tr>
               </thead>
               <tbody id="admin-videos-tbody">
-                <!-- Dynamically populated -->
+                <!-- Dynamically filled -->
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- Messages Inbox -->
-        <div>
-          <h2 style="margin-bottom: 20px;">Client Messages Inbox</h2>
+        <!-- CLIENT TESTIMONIALS & REVIEWS SECTION -->
+        <div style="margin-bottom: 60px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
+            <div>
+              <h2 style="margin: 0;">Client Testimonials & Reviews</h2>
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Add and edit client reviews and photos to feature on your home page.</p>
+            </div>
+            
+            <button onclick="openAddTestimonialModal()" class="btn btn-primary" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border: none;">
+              <i class="ri-user-star-line" style="font-size: 1.2rem;"></i> + Add Client Review
+            </button>
+          </div>
+
           <div class="admin-table-wrapper">
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Message</th>
-                  <th>Date</th>
+                  <th>Photo</th>
+                  <th>Client Name</th>
+                  <th>Role / Company</th>
+                  <th>Rating</th>
+                  <th>Review Feedback</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
-              <tbody id="admin-messages-tbody">
-                <!-- Dynamically populated -->
+              <tbody id="admin-testimonials-tbody">
+                <!-- Dynamically filled -->
               </tbody>
             </table>
           </div>
         </div>
+
+        <!-- Contact Messages Section -->
+        <div style="margin-bottom: 60px;">
+          <h2 style="margin-bottom: 6px;">Client Contact Messages</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Messages submitted via the contact form on your website.</p>
+          
+          <div class="admin-table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Sender Name</th>
+                  <th>Email</th>
+                  <th>Message / Inquiry</th>
+                  <th>Date & Time</th>
+                </tr>
+              </thead>
+              <tbody id="admin-messages-tbody">
+                <!-- Dynamically filled -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </section>
 
     </div>
   </main>
 
-  <!-- Minimal & Clean Add/Edit Video Modal -->
+  <!-- MODAL 1: Add/Edit Video Project -->
   <div class="modal-overlay" id="video-modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 680px;">
       <div class="modal-header">
         <h3 id="modal-title">+ Add New Video Project</h3>
         <button class="modal-close-btn" onclick="closeModal()"><i class="ri-close-line"></i></button>
@@ -205,18 +240,18 @@
 
       <div class="modal-body">
         <form id="video-form">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div class="form-group">
-              <label class="form-label" for="form-title">Video Title *</label>
-              <input type="text" id="form-title" class="form-control" placeholder="e.g. Luxury Real Estate Cinematic Tour" required />
-            </div>
+          <div class="form-group">
+            <label class="form-label" for="form-title">Video Title *</label>
+            <input type="text" id="form-title" class="form-control" placeholder="e.g. Luxury Real Estate Cinematic Walkthrough" required />
+          </div>
 
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
             <div class="form-group">
               <label class="form-label" for="form-category">Category *</label>
-              <select id="form-category" class="form-control" style="background: var(--bg-surface);">
+              <select id="form-category" class="form-control" required>
                 <option value="Real Estate">Real Estate</option>
-                <option value="Reels">Reels</option>
-                <option value="Shorts">Shorts</option>
+                <option value="Reels">Reels (9:16)</option>
+                <option value="Shorts">Shorts (9:16)</option>
                 <option value="Commercial">Commercial</option>
                 <option value="YouTube">YouTube</option>
                 <option value="Wedding">Wedding</option>
@@ -224,19 +259,19 @@
                 <option value="Color Grading">Color Grading</option>
               </select>
             </div>
-          </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
             <div class="form-group">
               <label class="form-label" for="form-aspect-ratio">Aspect Ratio *</label>
-              <select id="form-aspect-ratio" class="form-control" style="background: var(--bg-surface);">
+              <select id="form-aspect-ratio" class="form-control" required>
                 <option value="16:9">16:9 (Cinematic / Landscape)</option>
-                <option value="9:16">9:16 (Vertical Reel / Short)</option>
-                <option value="4:5">4:5 (Social Portrait)</option>
+                <option value="9:16">9:16 (Vertical Reels / Shorts)</option>
+                <option value="4:5">4:5 (Social Feed)</option>
                 <option value="1:1">1:1 (Square)</option>
               </select>
             </div>
+          </div>
 
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
             <div class="form-group">
               <label class="form-label" for="form-client">Client Name</label>
               <input type="text" id="form-client" class="form-control" placeholder="e.g. Vanguard Estates" />
@@ -244,96 +279,144 @@
 
             <div class="form-group">
               <label class="form-label" for="form-duration">Duration</label>
-              <input type="text" id="form-duration" class="form-control" placeholder="e.g. 02:45" />
+              <input type="text" id="form-duration" class="form-control" placeholder="e.g. 02:45" value="01:00" />
             </div>
           </div>
 
-          <!-- Minimal Video Source Selector -->
+          <!-- Video Upload Source Selection -->
           <div class="form-group">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-              <label class="form-label" style="margin-bottom: 0;">Video File / Link *</label>
-              <div class="segmented-control">
-                <button type="button" class="segment-btn active" id="tab-v-file" onclick="switchVideoSource('file')"><i class="ri-upload-cloud-line"></i> Upload File</button>
-                <button type="button" class="segment-btn" id="tab-v-url" onclick="switchVideoSource('url')"><i class="ri-link"></i> URL Link</button>
+            <label class="form-label">Video File / Link *</label>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+              <button type="button" class="btn btn-secondary btn-sm active" id="tab-v-file" onclick="switchVideoSource('file')"><i class="ri-upload-cloud-line"></i> Upload File</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="tab-v-url" onclick="switchVideoSource('url')"><i class="ri-link"></i> URL Link</button>
+            </div>
+
+            <div id="v-file-container">
+              <div style="border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 20px; text-align: center; background: rgba(255,255,255,0.02);">
+                <i class="ri-movie-line" style="font-size: 2rem; color: var(--accent-primary); margin-bottom: 8px;"></i>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">Choose Video File to Upload to Google Drive</p>
+                <input type="file" id="form-video-file" accept="video/*" onchange="updateFileName(this, 'v-file-name')" style="display: none;" />
+                <button type="button" onclick="document.getElementById('form-video-file').click()" class="btn btn-secondary btn-sm">Select Video File</button>
+                <div id="v-file-name" style="font-size: 0.8rem; margin-top: 8px; color: var(--text-dim);">Supports .mp4, .mov, .avi</div>
               </div>
             </div>
 
-            <!-- Video File Dropzone -->
-            <div id="v-file-container" class="file-dropzone">
-              <i class="ri-movie-2-line" style="font-size: 2rem; color: var(--accent-primary);"></i>
-              <p style="font-weight: 600; font-size: 0.9rem; margin-top: 6px;">Choose Video File to Upload to Google Drive</p>
-              <span id="v-file-name" style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 4px;">Supports .mp4, .mov, .avi</span>
-              <input type="file" id="form-video-file" accept="video/*" onchange="updateFileName(this, 'v-file-name')" />
-            </div>
-
-            <!-- Video Link Input -->
             <div id="v-url-container" style="display: none;">
-              <input type="url" id="form-drive-url" class="form-control" placeholder="Paste Google Drive Embed URL or YouTube Link..." />
+              <input type="url" id="form-drive-url" class="form-control" placeholder="https://drive.google.com/file/d/.../preview or YouTube URL" />
             </div>
           </div>
 
-          <!-- Minimal Thumbnail Source Selector -->
+          <!-- Thumbnail Upload Source Selection -->
           <div class="form-group">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-              <label class="form-label" style="margin-bottom: 0;">Thumbnail Image</label>
-              <div class="segmented-control">
-                <button type="button" class="segment-btn active" id="tab-t-file" onclick="switchThumbSource('file')"><i class="ri-image-line"></i> Upload Image</button>
-                <button type="button" class="segment-btn" id="tab-t-url" onclick="switchThumbSource('url')"><i class="ri-link"></i> Image URL</button>
+            <label class="form-label">Thumbnail Image (Optional - Auto Video Frame if empty)</label>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+              <button type="button" class="btn btn-secondary btn-sm active" id="tab-t-file" onclick="switchThumbSource('file')"><i class="ri-image-add-line"></i> Upload Image</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="tab-t-url" onclick="switchThumbSource('url')"><i class="ri-link"></i> Image URL</button>
+            </div>
+
+            <div id="t-file-container">
+              <div style="border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 16px; text-align: center; background: rgba(255,255,255,0.02);">
+                <input type="file" id="form-thumb-file" accept="image/*" onchange="updateFileName(this, 't-file-name')" style="display: none;" />
+                <button type="button" onclick="document.getElementById('form-thumb-file').click()" class="btn btn-secondary btn-sm">Select Thumbnail Image</button>
+                <div id="t-file-name" style="font-size: 0.8rem; margin-top: 6px; color: var(--text-dim);">Leave empty to auto-extract real frame from video!</div>
               </div>
             </div>
 
-            <!-- Thumbnail Dropzone -->
-            <div id="t-file-container" class="file-dropzone">
-              <i class="ri-image-add-line" style="font-size: 2rem; color: #60a5fa;"></i>
-              <p style="font-weight: 600; font-size: 0.9rem; margin-top: 6px;">Choose Cover Image File</p>
-              <span id="t-file-name" style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 4px;">Supports .jpg, .png, .webp</span>
-              <input type="file" id="form-thumb-file" accept="image/*" onchange="updateFileName(this, 't-file-name')" />
-            </div>
-
-            <!-- Thumbnail URL Input -->
             <div id="t-url-container" style="display: none;">
-              <input type="url" id="form-thumbnail" class="form-control" placeholder="Paste Thumbnail Image URL..." />
+              <input type="url" id="form-thumbnail" class="form-control" placeholder="https://drive.google.com/thumbnail?id=..." />
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="form-description">Project Description</label>
-            <textarea id="form-description" class="form-control" placeholder="Describe editing style, pacing, color grade LUTs, and audio mixing details..."></textarea>
+            <textarea id="form-description" class="form-control" placeholder="Describe the post-production process, color grading, sound design, etc..."></textarea>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="form-tags">Software / Tags (comma separated)</label>
-            <input type="text" id="form-tags" class="form-control" placeholder="DaVinci Resolve, Color Grading, Sound Design" />
+            <label class="form-label" for="form-tags">Software Tags (Comma separated)</label>
+            <input type="text" id="form-tags" class="form-control" placeholder="DaVinci Resolve, Premiere Pro, After Effects" value="DaVinci Resolve, Premiere Pro" />
           </div>
 
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
-            <input type="checkbox" id="form-featured" style="width: 18px; height: 18px; accent-color: var(--accent-primary);" />
-            <label for="form-featured" style="font-size: 0.95rem;">Feature this video project on Home Page</label>
+          <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="form-featured" style="width: 20px; height: 20px; accent-color: var(--accent-primary);" />
+            <label for="form-featured" style="cursor: pointer; font-size: 0.95rem; font-weight: 600;">Feature on Home Page Hero Showreel ⭐</label>
           </div>
 
           <!-- Real-Time Upload Percentage Progress Indicator -->
-          <div id="upload-status-box" style="display: none; flex-direction: column; gap: 10px; background: rgba(0,102,255,0.08); border: 1px solid var(--accent-primary); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 20px;">
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-              <span id="upload-status-text" style="font-weight: 600; font-size: 0.9rem; color: #fff;">Uploading to Google Drive...</span>
-              <span id="upload-progress-percent" style="font-weight: 800; font-size: 1rem; color: var(--accent-primary);">0%</span>
+          <div id="upload-status-box" style="display: none; flex-direction: column; gap: 8px; margin-bottom: 20px; padding: 14px; background: rgba(0,102,255,0.1); border: 1px solid var(--accent-primary); border-radius: var(--radius-sm);">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700;">
+              <span id="upload-status-text">Uploading file to Google Drive...</span>
+              <span id="upload-progress-percent">0%</span>
             </div>
-
-            <!-- Animated Percentage Progress Bar -->
-            <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden;">
-              <div id="upload-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent-primary), #10b981); transition: width 0.3s ease;"></div>
+            <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+              <div id="upload-progress-bar" style="width: 0%; height: 100%; background: var(--accent-primary); transition: width 0.2s ease;"></div>
             </div>
           </div>
 
-          <div style="display: flex; justify-content: flex-end; gap: 12px;">
-            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-            <button type="submit" id="save-video-btn" class="btn btn-primary">Save Project</button>
-          </div>
+          <button type="submit" id="save-video-btn" class="btn btn-primary" style="width: 100%;">
+            Save Project <i class="ri-check-line"></i>
+          </button>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- Change Account Credentials (Username & Password) Modal -->
+  <!-- MODAL 2: Add/Edit Client Testimonial & Review -->
+  <div class="modal-overlay" id="testimonial-modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 id="t-modal-title">+ Add Client Review</h3>
+        <button class="modal-close-btn" onclick="closeTestimonialModal()"><i class="ri-close-line"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="testimonial-form">
+          <div class="form-group">
+            <label class="form-label" for="t-form-name">Client Name *</label>
+            <input type="text" id="t-form-name" class="form-control" placeholder="e.g. David Miller" required />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+              <label class="form-label" for="t-form-role">Role / Company *</label>
+              <input type="text" id="t-form-role" class="form-control" placeholder="e.g. Vanguard Estates, LA" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="t-form-rating">Star Rating *</label>
+              <select id="t-form-rating" class="form-control" required>
+                <option value="5">⭐⭐⭐⭐⭐ (5 Stars)</option>
+                <option value="4">⭐⭐⭐⭐ (4 Stars)</option>
+                <option value="3">⭐⭐⭐ (3 Stars)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Client Photo Upload -->
+          <div class="form-group">
+            <label class="form-label">Client Photo (Optional)</label>
+            <div style="border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 16px; text-align: center; background: rgba(255,255,255,0.02);">
+              <input type="file" id="t-form-photo-file" accept="image/*" onchange="updateFileName(this, 't-photo-name')" style="display: none;" />
+              <button type="button" onclick="document.getElementById('t-form-photo-file').click()" class="btn btn-secondary btn-sm"><i class="ri-image-add-line"></i> Select Client Photo</button>
+              <div id="t-photo-name" style="font-size: 0.8rem; margin-top: 6px; color: var(--text-dim);">Upload client profile photo or headshot</div>
+            </div>
+            <input type="url" id="t-form-photo-url" class="form-control" style="margin-top: 10px;" placeholder="Or paste Photo URL directly" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="t-form-review">Client Review & Feedback *</label>
+            <textarea id="t-form-review" class="form-control" placeholder="Write client's testimonial or review message here..." required></textarea>
+          </div>
+
+          <button type="submit" id="save-testimonial-btn" class="btn btn-primary" style="width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border: none;">
+            Save Review <i class="ri-check-line"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Account Credentials Settings -->
   <div class="modal-overlay" id="password-modal">
     <div class="modal-content" style="max-width: 480px;">
       <div class="modal-header">
@@ -345,28 +428,27 @@
         <form id="change-password-form">
           <div class="form-group">
             <label class="form-label" for="pass-current">Current Password *</label>
-            <input type="password" id="pass-current" class="form-control" placeholder="Enter current password for verification" required />
+            <input type="password" id="pass-current" class="form-control" placeholder="Enter current password" required />
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="acc-new-user">New Username *</label>
-            <input type="text" id="acc-new-user" class="form-control" value="admin" placeholder="New username (e.g. sachin)" required />
+            <label class="form-label" for="acc-new-user">Admin Username *</label>
+            <input type="text" id="acc-new-user" class="form-control" value="admin" required />
           </div>
 
           <div class="form-group">
             <label class="form-label" for="pass-new">New Password *</label>
-            <input type="password" id="pass-new" class="form-control" placeholder="Minimum 6 characters" required />
+            <input type="password" id="pass-new" class="form-control" placeholder="Min 6 characters" required />
           </div>
 
           <div class="form-group">
             <label class="form-label" for="pass-confirm">Confirm New Password *</label>
-            <input type="password" id="pass-confirm" class="form-control" placeholder="Repeat new password" required />
+            <input type="password" id="pass-confirm" class="form-control" placeholder="Re-enter new password" required />
           </div>
 
-          <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-            <button type="button" class="btn btn-secondary" onclick="closePasswordModal()">Cancel</button>
-            <button type="submit" id="save-password-btn" class="btn btn-primary">Save Credentials</button>
-          </div>
+          <button type="submit" id="save-password-btn" class="btn btn-primary" style="width: 100%;">
+            Save Credentials
+          </button>
         </form>
       </div>
     </div>

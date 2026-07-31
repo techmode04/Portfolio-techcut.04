@@ -1,6 +1,6 @@
 /* ==========================================================================
    SACHIN DHISLE PORTFOLIO - MAIN JS & INLINE LIGHTBOX VIDEO MODAL
-   Features: Instant Inline Lightbox Video Player (Multi-Engine Reliable Stream)
+   Features: Instant Inline Lightbox Video Player & Dynamic Client Testimonials
    ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initScrollAnimations();
   initStatsCounters();
   initInlineVideoModalMarkup();
+  renderTestimonials();
   registerServiceWorker();
 });
 
@@ -129,6 +130,78 @@ function initStatsCounters() {
   }, { threshold: 0.5 });
 
   statNumbers.forEach(el => observer.observe(el));
+}
+
+/**
+ * Render Dynamic Client Testimonials & Reviews on Home Page (index.html)
+ */
+async function renderTestimonials() {
+  const container = document.getElementById("testimonials-grid");
+  if (!container) return;
+
+  let testimonials = [];
+  try {
+    const res = await API.getTestimonials();
+    if (res && res.success && res.testimonials && res.testimonials.length > 0) {
+      testimonials = res.testimonials;
+    } else {
+      testimonials = JSON.parse(localStorage.getItem("sd_portfolio_testimonials") || "[]");
+    }
+  } catch (e) {
+    testimonials = JSON.parse(localStorage.getItem("sd_portfolio_testimonials") || "[]");
+  }
+
+  // If no custom testimonials added yet, render default testimonials
+  if (!testimonials || testimonials.length === 0) {
+    container.innerHTML = `
+      <div class="glass-card" style="padding: 28px;">
+        <div style="color: #f59e0b; font-size: 1.1rem; margin-bottom: 14px;">
+          <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.7;">
+          "sachindhisle turned our raw drone and walkthrough footage into an unbelievable luxury real estate film. Our client was blown away by the speed ramps and sound design!"
+        </p>
+        <div style="font-weight: 700; color: var(--text-main);">David Miller</div>
+        <div style="font-size: 0.8rem; color: var(--accent-primary);">Vanguard Estates, LA</div>
+      </div>
+
+      <div class="glass-card" style="padding: 28px;">
+        <div style="color: #f59e0b; font-size: 1.1rem; margin-bottom: 14px;">
+          <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.7;">
+          "Our Instagram Reel retention jumped by 40% after sachindhisle redesigned our caption typography and kinetic cuts. Top tier video editing skills."
+        </p>
+        <div style="font-weight: 700; color: var(--text-main);">Alex Turner</div>
+        <div style="font-size: 0.8rem; color: var(--accent-primary);">Creator Mastery</div>
+      </div>
+    `;
+    return;
+  }
+
+  // Render custom testimonials dynamically with Client Photo!
+  container.innerHTML = testimonials.map(t => {
+    const starCount = t.rating || 5;
+    const starsHtml = '<i class="ri-star-fill"></i>'.repeat(starCount);
+
+    return `
+      <div class="glass-card" style="padding: 28px; display: flex; flex-direction: column;">
+        <div style="color: #f59e0b; font-size: 1.1rem; margin-bottom: 14px;">
+          ${starsHtml}
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.7; flex-grow: 1;">
+          "${escapeHTML(t.reviewText)}"
+        </p>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          ${t.photoUrl ? `<img src="${escapeHTML(t.photoUrl)}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-primary);" alt="${escapeHTML(t.name)}" />` : `<div style="width:48px; height:48px; border-radius:50%; background:rgba(0,102,255,0.15); display:flex; align-items:center; justify-content:center; color:var(--accent-primary); font-size:1.2rem; font-weight:700;">${escapeHTML((t.name || 'C')[0])}</div>`}
+          <div>
+            <div style="font-weight: 700; color: var(--text-main); font-size: 1.02rem;">${escapeHTML(t.name)}</div>
+            <div style="font-size: 0.82rem; color: var(--accent-primary);">${escapeHTML(t.roleCompany || 'Client')}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
 }
 
 /**
